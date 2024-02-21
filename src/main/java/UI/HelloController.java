@@ -7,7 +7,9 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.Node;
+import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
+import javafx.scene.control.ButtonType;
 import javafx.scene.control.Label;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
@@ -16,6 +18,7 @@ import javafx.scene.layout.Pane;
 import Principales.*;
 
 import java.net.URL;
+import java.util.Optional;
 import java.util.ResourceBundle;
 import java.util.Locale;
 
@@ -154,13 +157,61 @@ public class HelloController implements Initializable {
 
     public void pintarPosicionesPosibles(Posicion[] posiciones) {
         Pane pane;
+        for (int i = 0; i <= 7; i++) {
+            for (int j = 0; j <= 7; j++) {
+                pane = new Pane();
+                boolean posible = false;
+                for (int k = 0; k < posiciones.length; k++) {
+                    if (posiciones[k] != null && posiciones[k].getFila() == i && posiciones[k].getColumna() == j) {
+                        pane.setStyle("-fx-background-color:#f2f47f ;");
+                        posible = true;
+                    }
 
-
+                }
+                if (!posible) {
+                    if (j % 2 == 0 && i % 2 == 0 || j % 2 != 0 && i % 2 != 0) {
+                        pane.setStyle("-fx-background-color: #769853;");
+                    } else {
+                        pane.setStyle("-fx-background-color: #e7ebca;");
+                    }
+                }
+                if (tablero.hayPieza(i, j)) {
+                    pane.getChildren().addAll(new ImageView(tablero.devuelvePieza(i, j).toImage()));
+                }
+                mainGrid.add(pane, j, i);
+            }
+        }
     }
+
+
+
 
     public int alertaPromocion() {
         int opcion = 0;
+        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+        alert.setTitle(resourceBundle.getString("PROMOCION_PEON"));
+        alert.setHeaderText(resourceBundle.getString("QUE_PIEZA"));
+        alert.setContentText(resourceBundle.getString("SUSTITUIR_PEON"));
 
+
+        ButtonType reina = new ButtonType(resourceBundle.getString("REINA"));
+        ButtonType caballo = new ButtonType(resourceBundle.getString("CABALLO"));
+        ButtonType alfil = new ButtonType(resourceBundle.getString("ALFIL"));
+        ButtonType torre = new ButtonType(resourceBundle.getString("TORRE"));
+
+
+        alert.getButtonTypes().setAll(reina, caballo, alfil, torre);
+
+        Optional<ButtonType> result = alert.showAndWait();
+        if (result.get().getText().equalsIgnoreCase("Reina")) {
+            opcion = 1;
+        } else if (result.get().getText().equalsIgnoreCase("Caballo")) {
+            opcion = 2;
+        } else if (result.get().getText().equalsIgnoreCase("Torre")) {
+            opcion = 3;
+        } else if (result.get().getText().equalsIgnoreCase("Alfil")) {
+            opcion = 4;
+        }
         return opcion;
     }
 
@@ -248,11 +299,6 @@ public class HelloController implements Initializable {
             }
         }
     }
-
-
-
-
-
 
     public void enroque(ActionEvent actionEvent) {
         String language = resourceBundle.getLocale().getLanguage();
