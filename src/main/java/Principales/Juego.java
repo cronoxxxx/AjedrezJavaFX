@@ -203,8 +203,6 @@ public class Juego {
                     }
                 }
             }
-
-
         return jugadaa;
     }
 }

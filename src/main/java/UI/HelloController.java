@@ -25,6 +25,7 @@ import java.util.Locale;
 public class HelloController implements Initializable {
     @FXML
     private Label label2;
+    @FXML
     public Button boton;
     @FXML
     private Label label;
@@ -53,29 +54,34 @@ public class HelloController implements Initializable {
     }
 
     public void initializeLanguageButton() {
-        boton.textProperty().bind(buttonText);
+        boton.textProperty().bind(buttonText); //vincula el texto de button al boton
     }
-
+//carga el idioma con dos mensajes de bienvenida cada vez que presionas el boton
     private void loadLanguage(String lang) {
         resourceBundle = ResourceBundle.getBundle("mensajes", new Locale(lang));
         label.setText(resourceBundle.getString("TURNO_DE_BLANCAS"));
         label2.setText(resourceBundle.getString("BIENVENIDO"));
         setButtonText(lang);
-
     }
 
     @Override
-    public void initialize(URL url, ResourceBundle resourceBundlee) {
+    public void initialize(URL url, ResourceBundle resourceBundle2) {
+        // Creación de instancias de juego y tablero
         juego = new Juego();
         tablero = new Tablero();
+        // Inicialización de variables (bandera para determinar si termino el juego en el metodo de click)
         fin = false;
+        // Actualización visual del tablero
         pintarTablero();
-        //label.setText(Constantes.TURNO_DE_BLANCAS);
-        resourceBundle = resourceBundlee;
+        // Almacena la referencia al ResourceBundle proporcionado como parámetro a otros properties de otros idiomas
+        resourceBundle = resourceBundle2;
+        // Configura el texto de las etiquetas utilizando el ResourceBundle cargando el idioma
         label.setText(resourceBundle.getString("TURNO_DE_BLANCAS"));
         label2.setText(resourceBundle.getString("BIENVENIDO"));
+        // Inicializa el botón de idioma
         initializeLanguageButton();
     }
+
 
     public void pintarTablero() {
         Pane pane;
@@ -203,7 +209,7 @@ public class HelloController implements Initializable {
         alert.getButtonTypes().setAll(reina, caballo, alfil, torre);
 
         Optional<ButtonType> result = alert.showAndWait();
-        if (result.get().getText().equalsIgnoreCase("Reina")) {
+        /*if (result.get().getText().equalsIgnoreCase("Reina")) {
             opcion = 1;
         } else if (result.get().getText().equalsIgnoreCase("Caballo")) {
             opcion = 2;
@@ -211,6 +217,18 @@ public class HelloController implements Initializable {
             opcion = 3;
         } else if (result.get().getText().equalsIgnoreCase("Alfil")) {
             opcion = 4;
+        }*/
+        if (result.isPresent()) {
+            String buttonText = result.get().getText().toLowerCase(); // Convertir a minúsculas para comparar sin importar el caso
+            if (buttonText.equals(resourceBundle.getString("REINA").toLowerCase())) {
+                opcion = 1;
+            } else if (buttonText.equals(resourceBundle.getString("CABALLO").toLowerCase())) {
+                opcion = 2;
+            } else if (buttonText.equals(resourceBundle.getString("TORRE").toLowerCase())) {
+                opcion = 3;
+            } else if (buttonText.equals(resourceBundle.getString("ALFIL").toLowerCase())) {
+                opcion = 4;
+            }
         }
         return opcion;
     }
@@ -299,10 +317,8 @@ public class HelloController implements Initializable {
             }
         }
     }
-
     public void enroque(ActionEvent actionEvent) {
         String language = resourceBundle.getLocale().getLanguage();
-
         switch (language) {
             case "":
                 loadLanguage("pt");
@@ -314,7 +330,7 @@ public class HelloController implements Initializable {
                 break;
             case "de":
                 loadLanguage("en");
-                setButtonText("Italian");
+                setButtonText("Italiano");
                 break;
             case "en":
                 loadLanguage("it");
@@ -330,6 +346,4 @@ public class HelloController implements Initializable {
                 break;
         }
     }
-
-
 }
